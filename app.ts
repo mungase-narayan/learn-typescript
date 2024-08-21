@@ -133,3 +133,172 @@ function getUser(id: UserID){
 }
 
 getUser('5');
+
+
+
+type ListType = string | number[]
+function getUserList(list: ListType){
+    return list.slice(0, 3);
+}
+
+console.log(getUserList('Narayan'))
+
+
+
+// Generics in typescript =>
+    /*In TypeScript, generics are used to assign multiple types to a function or variable without the value losing that specific type information upon return. The any keyword is similar in that it accommodates any and all types. However, it will not retain specific type information.
+*/
+
+
+function logString(arg: string){
+    console.log(arg);
+    return arg;
+}
+
+function logNumber(arg: number){
+    console.log(arg);
+    return arg;
+}
+
+function logArray(arg: any[]){
+    console.log(arg);
+    return arg;
+}
+
+
+//Generic function =>
+function logAnything<T>(arg: T): T{
+    console.log(arg);
+    return arg;
+}
+
+
+//Example of Using Generics
+interface HasAge {
+    age: number;
+}
+
+function getOldest <T extends HasAge> (people: T[]): T{
+    return people.sort((s, e)=>e.age - s.age)[0];
+}
+
+const people: HasAge[] = [{age: 20}, {age: 30}, {age: 40}]
+
+interface player{
+    name: string;
+    age: number;
+}
+
+const players: player[] =[
+    {name: 'narayan', age: 20},
+    {name: 'hari', age: 22},
+    {name: 'rushi', age: 24}
+]
+
+//Using Assertion
+const oldestPlayer = getOldest(players) as player;
+console.log(oldestPlayer.name)
+
+//Using Generics
+const oldestPerson = getOldest(people);
+console.log(oldestPerson.age)
+
+
+// #1. Examples of Using Generics =>
+interface Ipost {
+    title: string;
+    id: number;
+    description: string;
+}
+
+interface Iuser {
+    name: string;
+    id: number;
+    age: number;
+}
+
+const fetchPostData = async (postPath: string): Promise<Ipost[]>  =>{
+    const response = await fetch(`http://localhost:6600${postPath}`);
+    return response.json();
+}
+
+const fetchUserData = async (userPath: string): Promise<Iuser[]>  =>{
+    const response = await fetch(`http://localhost:6600${userPath}`);
+    return response.json();
+}
+
+// ###Generics Function =>
+const fetchData = async <resultType>(urlPath: string): Promise<resultType>  =>{
+    const response = await fetch(`http://localhost:6600${urlPath}`);
+    return response.json();
+}
+
+//immediately invoke function
+(async () => {
+    // const posts = await fetchPostData('/posts');
+    // posts[0].description  # Auto complition 1.title 2.id 3.description
+
+    // const users = await fetchUserData('/users');
+    // users[0].name  # Auto complition 1.name 2.id 3.age
+
+    const posts = await fetchData<Ipost[]>('/posts') //only change function types and parameters
+    //posts[0].description  # Auto complition 1.title 2.id 3.description
+    //users[0].name  # Auto complition 1.name 2.id 3.age
+})
+
+
+
+// ###Structural Typing or duck typing in typescript =>
+    /*In TypeScript, the duck-typing feature ensures type safety. As a result of the duck-typing rule, the TypeScript compiler verifies that two objects are identical in terms of having matching properties and methods. This technique is used to compare two objects by determining if they have the same type-matching properties and object members.
+*/
+
+interface ICreadential {
+    username: string;
+    password: string;
+    isAdmin?: boolean;
+}
+
+function login(creadentials: ICreadential): boolean{
+    console.log(creadentials);
+    return true;
+}
+
+const user1 = {
+    username: 'narayan',
+    password: '123456',
+    isAdmin: true
+}
+
+// login(user1)
+
+interface IAuth {
+    username: string;
+    password: string;
+    login(username: string, password: string): void;
+}
+
+const auth: IAuth = {
+    username: 'narayan',
+    password: '123456',
+    login(username: string, password: string){
+        return true;
+    }
+}
+
+
+
+// ###Inference in typescript =>
+    /*In TypeScript, there are several places where type inference is used to provide type information when there is no explicit type annotation. For example, in this code.
+
+    Type inference is helpful in type-checking when there are no explicit type annotation is available. In type inference, there can be a situation where an object may be initialized with multiple types.
+
+*/
+
+//Example
+const data = {
+    name: 'narayan',
+    age: 20
+}
+
+// data.name  # type: string
+// data.age   # type: number
